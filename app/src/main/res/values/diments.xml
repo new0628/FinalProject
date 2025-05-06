@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="font_h1">28sp</dimen>          <!-- 헤더 -->
+    <dimen name="font_card_big">24sp</dimen>    <!-- 큰 카드(커스터마이징) -->
+    <dimen name="font_card_small">18sp</dimen>  <!-- 오른쪽 두 카드 -->
+    <dimen name="font_section_title">22sp</dimen>
+
+</resources>

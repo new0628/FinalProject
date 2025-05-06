@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="font_h1_320">26sp</dimen>
+    <dimen name="font_card_big_320">22sp</dimen>
+    <dimen name="font_card_small_320">18sp</dimen>
+    <dimen name="font_section_title_320">20sp</dimen>
+</resources>

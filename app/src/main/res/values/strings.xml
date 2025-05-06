@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">FinalProject</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_events">Events</string>
+    <string name="nav_mypage">MyPage</string>
+    <string name="bluetooth_register">블루투스 등록</string>
+    <string name="socket_register">소켓 등록</string>
+    <string name="blackbox_text">서비스를 위해\n블랙박스를 등록해 주세요</string>
+    <string name="main_profile">My Profile</string>
+    <string name="change_btn">change</string>
+    <string name="myprofile_name">안희영</string>
+    <string name="myprofile_emial">sangwon@gmail.com</string>
+    <string name="tv_header">How may I help\n you today?</string>
+    <string name="myblackbox_title">My BlackBox</string>
+    <string name="mycustomize_name">나만의\n커스터마이징</string>
+    <string name="myblackbox_name">나의 블랙박스</string>
+    <string name="mycall_name">나의 신고 내역</string>
+    <string name="amplitude_value">현재 세기: %1$d</string>
+    <string name="duration_value">지속 : %.1f초</string>
+    <string name="current_amplitude">현재 세기: %1$d</string>
+    <string name="initial_duration">지속: %.1f초</string>
+    <string name="duration_in_seconds">지속: %.1f초</string>
+
+
+
+
+</resources>
