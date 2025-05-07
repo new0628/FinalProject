@@ -20,8 +20,15 @@
     <string name="current_amplitude">현재 세기: %1$d</string>
     <string name="initial_duration">지속: %.1f초</string>
     <string name="duration_in_seconds">지속: %.1f초</string>
+    <string name="eventpage_topText">"Real-time momements, \nsaved and sorted"</string>
+    <string name="event_today_text">Today Event</string>
+    <string name="event_past_text">Past Event</string>
+    <string name="event_description">event list</string>
+    <string name="event_search_hint">search</string>
+    <string name="tab_event_description">tab event</string>
 
-
-
+    <string name="event_title">event title</string>
+    <string name="event_data">event data</string>
+    <string name="delete_btn">deleteBtn</string>
 
 </resources>

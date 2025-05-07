@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="4dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#444444"
+        >
+
+        <View
+            android:id="@+id/colorStrip"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+
+            android:background="@android:color/holo_red_light"
+            />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="16dp" >
+
+            <TextView
+                android:id="@+id/eventTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_title"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                />
+
+            <TextView
+                android:id="@+id/eventDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/event_data"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:textColor="#666666"
+                android:textSize="16sp"
+                />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+
+            android:id="@+id/optionBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_auto_fix"
+            android:background="#444444"
+            android:tint="#FFFFFF"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:contentDescription="@string/delete_btn"
+            />
+
+    </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
