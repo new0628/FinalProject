@@ -35,7 +35,7 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event Title"
+                android:text="@string/event_title"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:textStyle="bold"
@@ -47,7 +47,7 @@
                 android:id="@+id/eventDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event Date"
+                android:text="@string/event_data"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:textColor="#666666"
@@ -66,7 +66,7 @@
             android:tint="#FFFFFF"
             android:layout_gravity="center"
             android:padding="8dp"
-            android:contentDescription="deleteBtn"
+            android:contentDescription="@string/delete_btn"
             />
 
     </LinearLayout>

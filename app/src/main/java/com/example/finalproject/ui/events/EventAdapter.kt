@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+
 
 class EventAdapter(private val items: MutableList<EventItem>,
     private val onDeleteClicked: (position: Int) -> Unit) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
@@ -49,7 +51,7 @@ class EventAdapter(private val items: MutableList<EventItem>,
         holder.dateText.text = event.date
 
         try {
-            holder.colorStrip.setBackgroundColor(android.graphics.Color.parseColor(event.color))
+            holder.colorStrip.setBackgroundColor(event.color.toColorInt())
         } catch (e: IllegalArgumentException) {
             holder.colorStrip.setBackgroundColor(android.graphics.Color.GRAY)
         }
@@ -65,8 +67,9 @@ class EventAdapter(private val items: MutableList<EventItem>,
     }
 
     fun clearAll() {
+        val size = items.size
         items.clear()
-        notifyDataSetChanged()
+        notifyItemRangeRemoved(0, size)
     }
 
     fun deleteItem(position: Int) {
@@ -78,11 +81,14 @@ class EventAdapter(private val items: MutableList<EventItem>,
     }
 
     fun setItems(newItems: List<EventItem>) {
+        val oldSize = items.size
+        items.clear()
+        notifyItemRangeRemoved(0, oldSize)
+
         originalItems.clear()
         originalItems.addAll(newItems)
-        items.clear()
         items.addAll(newItems)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(0, items.size)
     }
 
     fun filter(query: String) {
@@ -92,8 +98,11 @@ class EventAdapter(private val items: MutableList<EventItem>,
             originalItems.filter { it.title.contains(query, ignoreCase = true) }
         }
         Log.d("EventAdapter", "필터링 결과: ${filtered.size}개")
+        val oldSize = items.size
         items.clear()
+        notifyItemRangeRemoved(0, oldSize)
+
         items.addAll(filtered)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(0, items.size)
     }
 }

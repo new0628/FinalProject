@@ -1,6 +1,6 @@
 package com.example.finalproject.ui.events
 
-import android.media.metrics.Event
+
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.random.Random
+
 
 abstract class BaseEventFragment : Fragment() {
 

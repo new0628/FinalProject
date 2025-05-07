@@ -27,4 +27,8 @@
     <string name="event_search_hint">search</string>
     <string name="tab_event_description">tab event</string>
 
+    <string name="event_title">event title</string>
+    <string name="event_data">event data</string>
+    <string name="delete_btn">deleteBtn</string>
+
 </resources>

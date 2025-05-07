@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+
 import com.example.finalproject.databinding.FragmentParkingEventBinding
-import kotlin.random.Random
+
 
 class ParkingEventFragment : BaseEventFragment() {
 
