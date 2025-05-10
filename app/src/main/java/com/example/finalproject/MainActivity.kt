@@ -5,19 +5,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.room.Room
 import com.example.finalproject.ui.events.EventFragment
 import com.example.finalproject.ui.home.HomeFragment
 import com.example.finalproject.ui.mypage.MyPageFragment
 import com.example.finalproject.databinding.ActivityMainBinding
 import com.example.finalproject.ui.TabItem
+import com.example.finalproject.ui.events.EventDatabase
 import com.example.finalproject.ui.setupCustomTabs
 
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        lateinit var db: EventDatabase
+    }
     // 바인딩
     private lateinit var binding: ActivityMainBinding
     // 탭 항목 리스트
     private lateinit var tabItems: List<TabItem>
+
     // 화면 포커스 변경 시 시스템 네비게이션바 숨김
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
@@ -33,6 +39,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        db = Room.databaseBuilder(
+            applicationContext,
+            EventDatabase::class.java,
+            "event_db"
+        ).build()
 
         tabItems = listOf( //tabitem만 추가하면됨
             TabItem(R.id.nav_home, R.id.icon_home, R.id.label_home, R.drawable.main_home_selected, R.drawable.main_home, "Home", HomeFragment()),

@@ -11,9 +11,12 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.example.finalproject.MainActivity
 import com.example.finalproject.databinding.FragmentEventsBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.launch
 
 class EventFragment : Fragment() {
     private lateinit var adapter: EventPageAdapter
@@ -39,6 +42,15 @@ class EventFragment : Fragment() {
         binding.viewPager.adapter = adapter
         binding.viewPager.offscreenPageLimit = 2
 
+        lifecycleScope.launch {
+            val allEvents = MainActivity.db.eventDao().getAll()
+            val drivingItems = allEvents.filter { it.mode == "주행시" }
+            val parkingItems = allEvents.filter { it.mode == "주차시" }
+
+            drivingItems.forEach { adapter.drivingFragment.addEvent(it) }
+            parkingItems.forEach { adapter.parkingFragment.addEvent(it) }
+        }
+
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = tabTitles[position]
 
@@ -48,12 +60,20 @@ class EventFragment : Fragment() {
             Log.d("EventFragment", "exBtn눌림")
             val newEvent = generateRandomEvent()
             Log.d("EventFragment", "$newEvent")
-            if (newEvent.mode == "주차시") {
-                adapter.parkingFragment.addEvent(newEvent)
+
+            lifecycleScope.launch {
+
+                MainActivity.db.eventDao().insert(newEvent)
+
+                if (newEvent.mode == "주차시") {
+                    adapter.parkingFragment.addEvent(newEvent)
+                }
+                else {
+                    adapter.drivingFragment.addEvent(newEvent)
+                }
             }
-            else {
-                adapter.drivingFragment.addEvent(newEvent)
-            }
+
+
         }
 
         binding.root.setOnTouchListener { _, _ ->
@@ -122,7 +142,7 @@ class EventFragment : Fragment() {
     private fun generateRandomEvent(): EventItem {
         val modes = listOf("주차시", "주행시")
         val titles = listOf("충격감지", "문열림감지", "사고알림")
-        val dates = listOf("2025-05-07", "2025-05-06", "2025-05-05")
+        val dates = listOf("2025-05-07", "2025-05-06", "2025-05-10")
         val colors = mapOf(
             "충격감지" to "#FF0000", // 빨강
             "문열림감지" to "#FFA500", // 주황

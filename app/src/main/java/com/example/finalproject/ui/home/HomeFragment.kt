@@ -4,6 +4,8 @@ package com.example.finalproject.ui.home
 
 import android.Manifest
 
+import android.bluetooth.BluetoothDevice
+
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -12,6 +14,7 @@ import android.provider.Settings
 import android.util.Log
 
 import android.view.View
+import android.widget.Button
 
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -31,6 +34,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
     // HomeViewModel 참조
     private val vm: HomeViewModel by activityViewModels()
+
+    private var bondedDevice: BluetoothDevice? = null
     // 권한 요청
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     // 뷰 생성 후 호출
@@ -38,6 +43,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         // 마지막 연결 디바이스 자동 연결 시도
         vm.reconnectLastDeviceIfPossible()
+        val btnSocketRegister = view.findViewById<Button>(R.id.btn_socket_register)
         // 바인딩 연결
         _binding = FragmentHomeBinding.bind(view)
         registerPermissionLauncher()
@@ -46,6 +52,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             Log.d("btnRegister", "블랙박스 버튼 눌림")
             checkPermissions()
         }
+
+        btnSocketRegister.setOnClickListener {
+            Log.d("HomeFragment", "소켓버튼눌림")
+            bondedDevice?.let { device ->
+                vm.connectToSocket(device)
+            } ?: run {
+                Toast.makeText(requireContext(), "연결할 기기가 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
     // 끝날 때 호출
     override fun onDestroyView() {

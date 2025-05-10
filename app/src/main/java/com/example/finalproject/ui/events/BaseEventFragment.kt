@@ -3,8 +3,11 @@ package com.example.finalproject.ui.events
 
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalproject.MainActivity
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -34,8 +37,22 @@ abstract class BaseEventFragment : Fragment() {
     }
 
     protected fun setupRecyclerViews(todayView: RecyclerView, pastView: RecyclerView) {
-        adapterToday = EventAdapter(mutableListOf()) { pos -> adapterToday.deleteItem(pos) }
-        adapterPast = EventAdapter(mutableListOf()) { pos -> adapterPast.deleteItem(pos) }
+        adapterToday = EventAdapter(mutableListOf()) { pos ->
+            val item = adapterToday.getItem(pos)
+            adapterToday.deleteItem(pos)
+
+            lifecycleScope.launch {
+                MainActivity.db.eventDao().delete(item)
+            }
+        }
+        adapterPast = EventAdapter(mutableListOf()) { pos ->
+            val item = adapterPast.getItem(pos)
+            adapterPast.deleteItem(pos)
+
+            lifecycleScope.launch {
+                MainActivity.db.eventDao().delete(item)
+            }
+        }
         recyclerToday = todayView
         recyclerPast = pastView
 

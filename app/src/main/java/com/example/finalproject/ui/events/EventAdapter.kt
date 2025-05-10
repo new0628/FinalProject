@@ -36,6 +36,14 @@ class EventAdapter(private val items: MutableList<EventItem>,
                 }
                 popup.show()
             }
+
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val event = items[position]
+                    Log.d("CardViewClick", "ID: ${event.id}, Mode: ${event.mode}, Title: ${event.title}, Date: ${event.date}, Color: ${event.color}")
+                }
+            }
         }
     }
 
@@ -79,6 +87,8 @@ class EventAdapter(private val items: MutableList<EventItem>,
             notifyItemRemoved(position)
         }
     }
+
+    fun getItem(position: Int): EventItem = items[position]
 
     fun setItems(newItems: List<EventItem>) {
         val oldSize = items.size

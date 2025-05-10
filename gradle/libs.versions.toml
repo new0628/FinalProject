@@ -1,4 +1,5 @@
 [versions]
+room = "2.7.1"
 agp = "8.9.1"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -18,8 +19,11 @@ composeFoundation = "1.2.1"
 wearToolingPreview = "1.0.0"
 activityCompose = "1.10.1"
 coreSplashscreen = "1.0.1"
+roomCommonJvm = "2.7.1"
+roomRuntimeAndroid = "2.7.1"
 
 [libraries]
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -43,6 +47,7 @@ androidx-compose-foundation = { group = "androidx.wear.compose", name = "compose
 androidx-wear-tooling-preview = { group = "androidx.wear", name = "wear-tooling-preview", version.ref = "wearToolingPreview" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
