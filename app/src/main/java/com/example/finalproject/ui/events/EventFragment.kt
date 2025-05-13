@@ -14,11 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalproject.MainActivity
+
 import com.example.finalproject.databinding.FragmentEventsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 
 class EventFragment : Fragment() {
+
     private lateinit var adapter: EventPageAdapter
     private var _binding: FragmentEventsBinding? = null
     private val binding get() = _binding!!
@@ -56,25 +58,36 @@ class EventFragment : Fragment() {
 
         }.attach()
 
-        binding.exBtn.setOnClickListener {
-            Log.d("EventFragment", "exBtn눌림")
-            val newEvent = generateRandomEvent()
-            Log.d("EventFragment", "$newEvent")
+//        // mqtt관련 // mqtt 필요없어지면 지워야함
+//        mqttManager = MqttManager { event ->
+//            lifecycleScope.launch {
+//
+//                MainActivity.db.eventDao().insert(event)
+//                if (event.mode == "주차시") {
+//                    adapter.parkingFragment.addEvent(event)
+//                }
+//                else {
+//                    adapter.drivingFragment.addEvent(event)
+//                }
+//            }
+//        }
+//        mqttManager.connectAndSubscribe()
 
-            lifecycleScope.launch {
+//        binding.exBtn.setOnClickListener {
+//            Log.d("EventFragment", "exBtn눌림")
+//            val newEvent = generateRandomEvent()
+//            Log.d("EventFragment", "$newEvent")
+//            lifecycleScope.launch {
+//                MainActivity.db.eventDao().insert(newEvent)
+//                if (newEvent.mode == "주차시") {
+//                    adapter.parkingFragment.addEvent(newEvent)
+//                }
+//                else {
+//                    adapter.drivingFragment.addEvent(newEvent)
+//                }
+//            }
+//        }
 
-                MainActivity.db.eventDao().insert(newEvent)
-
-                if (newEvent.mode == "주차시") {
-                    adapter.parkingFragment.addEvent(newEvent)
-                }
-                else {
-                    adapter.drivingFragment.addEvent(newEvent)
-                }
-            }
-
-
-        }
 
         binding.root.setOnTouchListener { _, _ ->
             binding.root.performClick()
@@ -136,6 +149,9 @@ class EventFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
+        // mqtt
+        //mqttManager.disconnect()
         _binding = null
     }
 
@@ -157,5 +173,14 @@ class EventFragment : Fragment() {
             date = dates[random.nextInt(dates.size)],
             color = colors[title] ?: "#FFFFFF"
         )
+    }
+
+    // mqtt 필요없어지면 지워야함
+    fun addEventFromMqtt(event: EventItem) {
+        if (event.mode == "주차시") {
+            adapter.parkingFragment.addEvent(event)
+        } else {
+            adapter.drivingFragment.addEvent(event)
+        }
     }
 }
