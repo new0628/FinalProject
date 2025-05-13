@@ -3,6 +3,8 @@
 package com.example.finalproject.ui.home
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothAdapter
 
 import android.bluetooth.BluetoothDevice
 
@@ -41,6 +43,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // 뷰 생성 후 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        logBondedDevices() // 연결된 블루투스가 뭔지
         // 마지막 연결 디바이스 자동 연결 시도
         vm.reconnectLastDeviceIfPossible()
         val btnSocketRegister = view.findViewById<Button>(R.id.btn_socket_register)
@@ -141,6 +145,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 )
             } else {
                 Toast.makeText(requireContext(), "권한 거부", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun logBondedDevices() {
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        if (bluetoothAdapter == null || !PermissionUtils.hasBluetoothConnectPermission(requireContext())) {
+            Log.w("HomeFragment", "Bluetooth 사용 불가 또는 권한 없음")
+            return
+        }
+
+        val bondedDevices = bluetoothAdapter.bondedDevices
+        if (bondedDevices.isEmpty()) {
+            Log.d("HomeFragment", "등록된 블루투스 기기 없음")
+        }
+        else {
+            bondedDevices.forEach {
+                Log.d("HomeFragment", "등록된 기기 이름: ${it.name}, 주소: ${it.address}")
             }
         }
     }
