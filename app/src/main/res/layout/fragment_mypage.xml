@@ -137,6 +137,14 @@
                         android:text="@string/myprofile_emial"
                         android:textColor="#E6E6E6"
                         android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/to_mes_num"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="위험 시 보낼 번호: "
+                        android:textColor="@color/white"
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

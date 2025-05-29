@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.play.services.wearable)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -52,12 +53,13 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 
-    implementation ("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
-    implementation ("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
-
     implementation(libs.androidx.room.runtime.android)
     kapt(libs.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }

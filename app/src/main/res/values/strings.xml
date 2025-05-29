@@ -1,4 +1,5 @@
 <resources>
+    <string name="event_image">이벤트 사진</string>
     <string name="app_name">FinalProject</string>
     <string name="nav_home">Home</string>
     <string name="nav_events">Events</string>

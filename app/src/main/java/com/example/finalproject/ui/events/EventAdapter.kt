@@ -1,5 +1,4 @@
 package com.example.finalproject.ui.events
-
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,109 +9,65 @@ import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+import com.example.finalproject.ui.events.EventItem
 
+class EventAdapter(
+    private val onDelete: (EventItem) -> Unit,
+    private val onItemClick: (EventItem) -> Unit
+) : RecyclerView.Adapter<EventAdapter.VH>() {
 
-class EventAdapter(private val items: MutableList<EventItem>,
-    private val onDeleteClicked: (position: Int) -> Unit) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+    //  실제 화면에 보여질 데이터
+    private val items = mutableListOf<EventItem>()
 
-    private val originalItems = mutableListOf<EventItem>()
-
-    inner class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleText: TextView = itemView.findViewById(R.id.eventTitle)
-        val dateText: TextView = itemView.findViewById(R.id.eventDate)
-        val colorStrip: View = itemView.findViewById(R.id.colorStrip)
-        private val optionBtn: ImageButton = itemView.findViewById(R.id.optionBtn)
-
+    inner class VH(v: View) : RecyclerView.ViewHolder(v) {
+        private val title = v.findViewById<TextView>(R.id.eventTitle)
+        private val date  = v.findViewById<TextView>(R.id.eventDate)
+        private val strip = v.findViewById<View>(R.id.colorStrip)
+        private val option= v.findViewById<ImageButton>(R.id.optionBtn)
 
         init {
-            optionBtn.setOnClickListener {
-                val popup = PopupMenu(itemView.context, optionBtn)
-                popup.menu.add("삭제하기")
-                popup.setOnMenuItemClickListener {
-                    if (adapterPosition != RecyclerView.NO_POSITION) {
-                        onDeleteClicked(adapterPosition)
+            option.setOnClickListener {
+                PopupMenu(v.context, option).apply {
+                    menu.add("삭제하기")
+                    setOnMenuItemClickListener {
+                        val pos = adapterPosition
+                        if (pos != RecyclerView.NO_POSITION)
+                            onDelete(items[pos])
+                        true
                     }
-                    true
-                }
-                popup.show()
+                }.show()
             }
+            v.setOnClickListener {
+                val pos = adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val e = items[pos]
+                    Log.d("EventItemClick",
+                        "mode:${e.mode}, id:${e.id}, title:${e.title}, date:${e.date}, imagePath:${e.imagePath}")
 
-            itemView.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val event = items[position]
-                    Log.d("CardViewClick", "ID: ${event.id}, Mode: ${event.mode}, Title: ${event.title}, Date: ${event.date}, Color: ${event.color}")
+                    onItemClick(e)
                 }
             }
         }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_event, parent, false)
-        return EventViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        val event = items[position]
-        holder.titleText.text = event.title
-        holder.dateText.text = event.date
-
-        try {
-            holder.colorStrip.setBackgroundColor(event.color.toColorInt())
-        } catch (e: IllegalArgumentException) {
-            holder.colorStrip.setBackgroundColor(android.graphics.Color.GRAY)
+        // 색 통일하고 싶으면
+        fun bind(e: EventItem) {
+            title.text = e.title
+            date.text  = e.date
+            runCatching { strip.setBackgroundColor(e.color.toColorInt()) }
+                .onFailure { strip.setBackgroundColor(0xFFCCCCCC.toInt()) }
         }
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun onCreateViewHolder(p: ViewGroup, t: Int) =
+        VH(
+            LayoutInflater.from(p.context)
+            .inflate(R.layout.item_event, p, false))
 
-    fun addEventItem(event: EventItem) {
-        Log.d("EventAdapter", "addEventItem: $event")
-        originalItems.add(0, event)
-        items.add(0, event)
-        notifyItemInserted(0)
-    }
-
-    fun clearAll() {
-        val size = items.size
-        items.clear()
-        notifyItemRangeRemoved(0, size)
-    }
-
-    fun deleteItem(position: Int) {
-        if (position in items.indices) {
-            val deleted = items.removeAt(position)
-            originalItems.remove(deleted)
-            notifyItemRemoved(position)
-        }
-    }
-
-    fun getItem(position: Int): EventItem = items[position]
+    override fun onBindViewHolder(h: VH, i: Int) = h.bind(items[i])
+    override fun getItemCount() = items.size
 
     fun setItems(newItems: List<EventItem>) {
-        val oldSize = items.size
         items.clear()
-        notifyItemRangeRemoved(0, oldSize)
-
-        originalItems.clear()
-        originalItems.addAll(newItems)
         items.addAll(newItems)
-        notifyItemRangeInserted(0, items.size)
-    }
-
-    fun filter(query: String) {
-        val filtered = if (query.isEmpty()) {
-            originalItems
-        } else {
-            originalItems.filter { it.title.contains(query, ignoreCase = true) }
-        }
-        Log.d("EventAdapter", "필터링 결과: ${filtered.size}개")
-        val oldSize = items.size
-        items.clear()
-        notifyItemRangeRemoved(0, oldSize)
-
-        items.addAll(filtered)
-        notifyItemRangeInserted(0, items.size)
+        notifyDataSetChanged()
     }
 }

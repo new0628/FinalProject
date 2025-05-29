@@ -12,6 +12,7 @@ class ParkingEventFragment : BaseEventFragment() {
 
     private var _binding: FragmentParkingEventBinding? = null
     private val binding get() = _binding!!
+    override val modeFilter = "주차시"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +29,8 @@ class ParkingEventFragment : BaseEventFragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
+
     }
 }

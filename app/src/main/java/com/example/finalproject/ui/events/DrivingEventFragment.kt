@@ -14,6 +14,7 @@ class DrivingEventFragment : BaseEventFragment() {
     private var _binding: FragmentDrivingEventBinding? = null
     private val binding get() = _binding!!
 
+    override val modeFilter = "주행시"
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,7 +30,8 @@ class DrivingEventFragment : BaseEventFragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
+
     }
 }

@@ -3,6 +3,7 @@
     package="com.example.finalproject"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
@@ -15,7 +16,13 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- ★ 추가 -->
+    <!-- API 26+ : 포그라운드 서비스 기본 권한 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
+    <!-- API 34+ : 유형별 세분화 권한 – ‘연결된 디바이스’ 용 -->
+    <!-- targetSdk 34 / 35 라면 반드시 함께 선언해야 합니다 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
 
     <application
         android:usesCleartextTraffic="true"
@@ -28,10 +35,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject"
         >
-
         <service
-            android:name="org.eclipse.paho.android.service.MqttService"
-            android:exported="false" />
+            android:name=".ui.home.BluetoothService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="connectedDevice" />
 
         <activity
             android:name=".MainActivity"

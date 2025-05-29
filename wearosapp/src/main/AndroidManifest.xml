@@ -28,7 +28,6 @@
             </intent-filter>
         </service>
 
-
         <uses-library
             android:name="com.google.android.wearable"
             android:required="true" />
