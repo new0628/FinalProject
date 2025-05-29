@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 data class EventItem(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val mode: String,
-    val title: String,
+    val title: String, //ex: "event1"
     val date: String,
-    val color: String
+    val color: String,
+    val imagePath: String // ex: "/storage/event1.jpg"
 )

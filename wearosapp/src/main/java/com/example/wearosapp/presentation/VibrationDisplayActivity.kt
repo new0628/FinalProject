@@ -30,8 +30,9 @@ class VibrationDisplayActivity : ComponentActivity() {
         }
 
         val message = intent.getStringExtra("message") ?: "알림"
+        val formattedMessage = if (message.contains("차량 충돌")) "🚨\n$message" else message
         //Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        findViewById<TextView>(R.id.messageTextView).text = message
+        findViewById<TextView>(R.id.messageTextView).text = formattedMessage
         Handler(Looper.getMainLooper()).postDelayed({
             finish()
         }, 3000L)

@@ -6,13 +6,14 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
+
 @Dao
 interface EventDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(event: EventItem)
 
-    @Query("SELECT * FROM event_table ORDER BY id DESC")
+    @Query("SELECT * FROM event_table ORDER BY date DESC")
     suspend fun getAll(): List<EventItem>
 
     @Delete

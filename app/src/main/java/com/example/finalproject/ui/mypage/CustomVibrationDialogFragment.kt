@@ -1,12 +1,15 @@
+
 package com.example.finalproject.ui.mypage
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
+
 import android.widget.Button
+import android.widget.RadioGroup
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 
 import com.example.finalproject.CustomVibrationPreference
@@ -14,65 +17,77 @@ import com.example.finalproject.R
 
 // 설정 다이얼로그
 class CustomVibrationDialogFragment : DialogFragment() {
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = layoutInflater.inflate(R.layout.dialog_custom_vibration, null)
 
-        //진동 세기 조절 바
+        val contextGroup     = view.findViewById<RadioGroup>(R.id.contextGroup)
         val amplitudeSeekBar = view.findViewById<SeekBar>(R.id.amplitudeSeekBar)
-        //진동 세기 텍스트
-        val amplitudeValueText = view.findViewById<TextView>(R.id.amplitudeValueText)
-        // 진동 지속 시간 조절 바
-        val durationSeekBar = view.findViewById<SeekBar>(R.id.durationSeekBar)
-        // 진동 지속 시간 텍스트
-        val durationValueText = view.findViewById<TextView>(R.id.durationValueText)
-        // 저장 버튼
-        val saveButton = view.findViewById<Button>(R.id.saveButton)
+        val amplitudeText    = view.findViewById<TextView>(R.id.amplitudeValueText)
+        val durationSeekBar  = view.findViewById<SeekBar>(R.id.durationSeekBar)
+        val durationText     = view.findViewById<TextView>(R.id.durationValueText)
+        val saveButton       = view.findViewById<Button>(R.id.saveButton)
 
-        //저장된 값 불러오기
-        val (savedAmplitude, savedDuration) = CustomVibrationPreference.load(requireContext())
-        amplitudeSeekBar.progress = savedAmplitude
-        durationSeekBar.progress = (savedDuration/500).toInt()
+        // 1) 라디오 기본 선택 (예: 사이렌)
+        contextGroup.check(R.id.radioSiren)
 
-        amplitudeValueText.text = getString(R.string.amplitude_value, savedAmplitude)
-        durationValueText.text = getString(R.string.initial_duration, (savedDuration / 1000.0))
-        // 진동 세기 변경 리스너
-        amplitudeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                amplitudeValueText.text = getString(R.string.current_amplitude, progress)
+        // 2) 선택된 타입에 맞춰 슬라이더 초기값 로드
+        fun refreshSliders() {
+            val type = when (contextGroup.checkedRadioButtonId) {
+                R.id.radioSiren     -> "siren"
+                R.id.radioLight     -> "light"
+                R.id.radioBlackbox  -> "blackbox"
+                else                -> "siren"
             }
+            val (amp, dur) = CustomVibrationPreference.load(requireContext(), type)
+            amplitudeSeekBar.progress = amp
+            durationSeekBar.progress  = (dur / 1000).toInt()
+            amplitudeText.text = "현재 세기: $amp"
+            durationText.text  = "지속: ${dur / 1000.0}초"
+        }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
-        // 진동 지속 시간 변경 리스너
-        durationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                val duration = progress * 500
-                val durationInSeconds = duration / 1000.0
-                durationValueText.text = getString(R.string.duration_value, durationInSeconds)
+        refreshSliders()
 
+        // 3) 타입 변경 시 슬라이더 값 즉시 업데이트
+        contextGroup.setOnCheckedChangeListener { _, _ ->
+            refreshSliders()
+        }
+
+        // 4) SeekBar 리스너
+        amplitudeSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar?, prog: Int, fromUser: Boolean) {
+                amplitudeText.text = "현재 세기: $prog"
             }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+            override fun onStopTrackingTouch(sb: SeekBar?) {}
         })
-        // 저장 버튼 클릭 처리
+        durationSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar?, prog: Int, fromUser: Boolean) {
+                val secs = prog.toDouble()
+                durationText.text = "지속: ${secs}초"
+            }
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+            override fun onStopTrackingTouch(sb: SeekBar?) {}
+        })
+
+        // 5) 저장 버튼
         saveButton.setOnClickListener {
-            val amplitude = amplitudeSeekBar.progress
-            val duration = durationSeekBar.progress * 500L
-
-            CustomVibrationPreference.save(requireContext(), amplitude, duration)
-            Log.d("MyApp", "amplitude : $amplitude, duration : $duration")
-
-            amplitudeValueText.text = getString(R.string.current_amplitude, amplitude)
-            durationValueText.text = getString(R.string.duration_in_seconds, duration / 1000.0)
+            val type = when (contextGroup.checkedRadioButtonId) {
+                R.id.radioSiren    -> "siren"
+                R.id.radioLight    -> "light"
+                R.id.radioBlackbox -> "blackbox"
+                else               -> "siren"
+            }
+            val amp = amplitudeSeekBar.progress
+            val dur = durationSeekBar.progress * 1000L
+            CustomVibrationPreference.save(requireContext(), type, amp, dur)
+            Toast.makeText(requireContext(), "$type 설정 저장됨", Toast.LENGTH_SHORT).show()
             dismiss()
         }
-        // 반환
+
         return AlertDialog.Builder(requireContext())
             .setTitle("진동 커스터마이징")
             .setView(view)
             .create()
     }
 }
-

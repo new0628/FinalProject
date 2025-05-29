@@ -1,33 +1,19 @@
 //HomeFragment.kt 
 
 package com.example.finalproject.ui.home
-
-import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
-
-import android.bluetooth.BluetoothDevice
-
+import android.bluetooth.BluetoothManager
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
-
 import android.view.View
-import android.widget.Button
-
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-
 import com.example.finalproject.R
 import com.example.finalproject.databinding.FragmentHomeBinding
-
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     // 뷰 바인딩
@@ -36,122 +22,44 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
     // HomeViewModel 참조
     private val vm: HomeViewModel by activityViewModels()
+    //private val targetMacAddress = "9C:B8:B4:9F:5A:19" // <-루빅파이 MAC 주소로 바꾸세요
 
-    private var bondedDevice: BluetoothDevice? = null
-    // 권한 요청
-    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
     // 뷰 생성 후 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        logBondedDevices() // 연결된 블루투스가 뭔지
-        // 마지막 연결 디바이스 자동 연결 시도
-        vm.reconnectLastDeviceIfPossible()
-        val btnSocketRegister = view.findViewById<Button>(R.id.btn_socket_register)
         // 바인딩 연결
         _binding = FragmentHomeBinding.bind(view)
-        registerPermissionLauncher()
-        // 블랙박스 버튼 클릭 시 BLE 연결 시작
-        binding.btnRegister.setOnClickListener {
-            Log.d("btnRegister", "블랙박스 버튼 눌림")
-            checkPermissions()
-        }
 
-        btnSocketRegister.setOnClickListener {
-            Log.d("HomeFragment", "소켓버튼눌림")
-            bondedDevice?.let { device ->
-                vm.connectToSocket(device)
-            } ?: run {
-                Toast.makeText(requireContext(), "연결할 기기가 없습니다.", Toast.LENGTH_SHORT).show()
+        // 블랙박스 버튼 클릭 시 블루투스 설정 들어가기
+        binding.btnRegister.setOnClickListener {
+            val intent = Intent(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS)
+            startActivity(intent)
+        }
+        binding.btnSocketRegister.setOnClickListener {
+            Log.d("btnRegister", "소켓 버튼 눌림")
+            val mac = vm.rubikpiMac.value
+            if (mac != null) {
+                val intent = Intent(requireContext(), BluetoothService::class.java).apply {
+                    putExtra("rubikpi_mac", mac)
+                }
+                ContextCompat.startForegroundService(requireContext(), intent)
+            } else {
+                Toast.makeText(requireContext(), "루빅파이 MAC 주소가 없습니다", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
+
     // 끝날 때 호출
     override fun onDestroyView() {
-        vm.stopScan()
+
         _binding = null
         super.onDestroyView()
-    }
-    // 권한체크 함수
-    private fun checkPermissions() {
-        val perms = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT
-            )
-        else
-            arrayOf(
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        // 거부된 권한 필터링
-        val deniedList = perms.filter {
-            ContextCompat.checkSelfPermission(requireContext(), it) != PackageManager.PERMISSION_GRANTED
-        }
-        // 모든 권한 허용된 경우 BLE 스캔 시작
-        if (deniedList.isEmpty()) {
-            vm.startScan(
-                onSuccess = {
-                    BluetoothDialogFragment().show(parentFragmentManager, "bt")
-                },
-                onFail = {
-                    Toast.makeText(requireContext(), "검색 실패", Toast.LENGTH_SHORT).show()
-                }
-            )
-
-        }else {
-            // 아직 허용되지 않은 권한이 있다면 요청
-            // "다시 묻지 않음"이 포함되어 있는지 확인
-            val someDeniedPermanently = deniedList.any {
-                !shouldShowRequestPermissionRationale(it)
-            }
-
-            if (someDeniedPermanently) {
-                // 사용자가 '다시 묻지 않음'을 선택한 경우 -> 설정으로 안내
-                Toast.makeText(
-                    requireContext(),
-                    "권한이 영구적으로 거부되었습니다. 설정에서 권한을 허용해주세요.",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                // 설정 화면으로 이동
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = android.net.Uri.fromParts("package", requireContext().packageName, null)
-                }
-                startActivity(intent)
-
-            } else {
-                // 아직은 한 번도 거부하지 않았거나, 거부했지만 '다시 묻지 않음'은 아님 -> 재요청 가능
-                permissionLauncher.launch(perms)
-            }
-        }
-    }
-    // 권한 등록 함수
-    private fun registerPermissionLauncher() {
-        permissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { grant ->
-            //val allGranted = grant.values.all { it }
-            if (grant.values.all { it }) {
-                vm.startScan(
-                    onSuccess = {
-                        BluetoothDialogFragment().show(parentFragmentManager, "bt")
-                    },
-                    onFail = {
-                        Toast.makeText(requireContext(), "검색 실패", Toast.LENGTH_SHORT).show()
-                    }
-                )
-            } else {
-                Toast.makeText(requireContext(), "권한 거부", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     @SuppressLint("MissingPermission")
     private fun logBondedDevices() {
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        val bluetoothManager = requireContext().getSystemService(BluetoothManager::class.java)
+        val bluetoothAdapter = bluetoothManager?.adapter
         if (bluetoothAdapter == null || !PermissionUtils.hasBluetoothConnectPermission(requireContext())) {
             Log.w("HomeFragment", "Bluetooth 사용 불가 또는 권한 없음")
             return
@@ -160,11 +68,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val bondedDevices = bluetoothAdapter.bondedDevices
         if (bondedDevices.isEmpty()) {
             Log.d("HomeFragment", "등록된 블루투스 기기 없음")
-        }
-        else {
-            bondedDevices.forEach {
-                Log.d("HomeFragment", "등록된 기기 이름: ${it.name}, 주소: ${it.address}")
+        } else {
+            bondedDevices.forEach { device ->
+                Log.d("HomeFragment", "등록된 기기 이름: ${device.name}, 주소: ${device.address}")
+                if (device.name == "rubikpi") {
+                    Log.d("HomeFragment", "✅ RubikPi 기기 발견 → MAC 저장: ${device.address}")
+                    vm.setRubikpiMac(device.address)
+                }
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+
+        logBondedDevices()
     }
 }
