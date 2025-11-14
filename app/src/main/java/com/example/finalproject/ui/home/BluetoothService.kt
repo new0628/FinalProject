@@ -142,6 +142,7 @@ class BluetoothService : Service() {
             mode == "light" && title == "light"     -> "초록불입니다. 출발하세요."
             mode == "siren" && title == "crash"  -> "차량 충돌이 발생했습니다."
             mode == "siren" && title == "car_accident"  -> "차량 충돌이 발생했습니다."
+            mode == "siren" && title == "front_car"  -> "앞차가 출발했습니다."
             mode == "driving" && title == "lane_closed" -> "차선 이탈을 감지했습니다."
             else -> return // 조건에 맞지 않으면 진동 안 보냄
         }
