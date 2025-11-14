@@ -160,8 +160,9 @@ class VibrateListenerActivity : ComponentActivity(),
     /** 메시지 → 배경 색상 매핑 */
     private fun pickColor(message: String): Int = when (message) {
         "사이렌", "경적" -> 0xFFFFFF00.toInt()        // 노란색
-        "초록불입니다. 출발하세요", "초록불입니다. 출발하세요." -> 0xFF00FF00.toInt() // 초록색 (마침표 포함 예외도 포함)
+        "초록불입니다. 출발하세요", "초록불입니다. 출발하세요.", "앞차가 출발했습니다." -> 0xFF00FF00.toInt() // 초록색 (마침표 포함 예외도 포함)
         "차량 충돌이 발생했습니다." -> 0xFFFF0000.toInt() // 빨강
+        "차선 이탈을 감지했습니다." -> 0xFFFF0000.toInt() // 빨강
         else -> 0xFFFF0000.toInt() // 빨강 또는 기본 빨강
     }
 }
